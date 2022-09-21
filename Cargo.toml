@@ -2,9 +2,11 @@
 name = "music-calculator"
 version = "0.1.0"
 edition = "2021"
+description = "Calculate a ii-V-I chord progression."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow = "1.0.65"
 clap = { version = "3.2.17" , features = ["derive"] }
 rust-music-theory = "0.2.0"

@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use anyhow::Result;
+use clap::Parser;
 use rust_music_theory::{
     chord::{Chord, Number, Quality},
     interval::Interval,
@@ -50,27 +52,36 @@ impl Display for TwoFiveProgression {
     }
 }
 
+#[derive(Debug)]
 struct ScaleDegree {
     pitch: PitchClass,
     interval_from_root: Interval,
 }
 
+fn parse_interval(semitone: &str) -> Result<Interval> {
+    let semitone_num = semitone.parse::<u8>()?;
+    Ok(Interval::from_semitone(semitone_num)?)
+}
+
+#[derive(Parser)]
+#[clap(author, version, about, long_about = None)]
+struct Args {
+    /// A string representing a pitch class
+    pitch: PitchClass,
+    /// A string representing the interval from the root note
+    #[clap(value_parser = clap::builder::ValueParser::new(parse_interval))]
+    interval: Interval,
+}
+
 fn main() {
-    use std::env;
+    let args = Args::parse();
 
-    let args: Vec<String> = env::args().collect();
+    let pitch = args.pitch;
+    let interval_from_root = args.interval;
 
-    let pitch = &args[1];
-    let interval = &args[2].parse::<u8>().unwrap();
-
-    let program_name = "music-calculator";
-
-    println!("ii-V-I!");
-    println!("Usage: {} [PITCH] [INTERVAL]", program_name);
-    println!();
     let scaledeg = ScaleDegree {
-        pitch: PitchClass::from_str(pitch).unwrap(),
-        interval_from_root: Interval::from_semitone(*interval).unwrap(),
+        pitch,
+        interval_from_root,
     };
     println!(
         "Given that {} is {} semitones from the root",
